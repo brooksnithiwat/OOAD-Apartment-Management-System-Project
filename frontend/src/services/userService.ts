@@ -1,4 +1,5 @@
-import { api } from './api';
+import * as api from './api';
+import type { ApiError } from './api';
 
 export type User = {
   id: number;
@@ -12,12 +13,35 @@ export type CreateUserPayload = {
   name?: string;
 };
 
+function isApiError(error: unknown): error is ApiError {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    'name' in error &&
+    (error as ApiError).name === 'ApiError'
+  );
+}
+
 export async function getUsers(): Promise<User[]> {
-  const response = await api.get<User[]>('/users');
-  return response.data;
+  try {
+    const response = await api.get<User[]>('/api/v1/users');
+    return response;
+  } catch (error) {
+    if (isApiError(error)) {
+      throw new Error(error.message);
+    }
+    throw new Error('Failed to fetch users.');
+  }
 }
 
 export async function createUser(payload: CreateUserPayload): Promise<User> {
-  const response = await api.post<User>('/users', payload);
-  return response.data;
+  try {
+    const response = await api.post<User>('/api/v1/users', payload);
+    return response;
+  } catch (error) {
+    if (isApiError(error)) {
+      throw new Error(error.message);
+    }
+    throw new Error('Failed to create user.');
+  }
 }

@@ -31,7 +31,7 @@ export function UserForm({ onSubmit }: UserFormProps) {
 
   return (
     <form className="card form" onSubmit={handleSubmit}>
-      <h2>Create User</h2>
+      <h2>Create Uer</h2>
       <label>
         Email
         <input
